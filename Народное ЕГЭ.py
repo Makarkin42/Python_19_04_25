@@ -9,7 +9,7 @@ floppa = "https://static.wikia.nocookie.net/fnaf-fanon-animatronics/images/b/b6/
 shailushai = "https://s0.rbk.ru/v6_top_pics/media/img/2/33/347018703159332.webp"
 maga = "https://icdn.lenta.ru/images/2025/02/18/14/20250218142101075/square_1280_bda036fb1cb4f2a41c1d14e0f358276d.jpg"
 giga = "https://upload.wikimedia.org/wikipedia/ru/9/94/%D0%93%D0%B8%D0%B3%D0%B0%D1%87%D0%B0%D0%B4.jpg"
-
+meme = "https://avatars.mds.yandex.net/get-vthumb/3306004/16fc402869f115e5031302b5c6bdf2ce/800x450"
 nach = InlineKeyboardMarkup()
 nach.row(InlineKeyboardButton("Начать", callback_data="starts"))
 
@@ -45,9 +45,9 @@ melon.row(InlineKeyboardButton("Арбузе", callback_data="мем 5 арбу�
 
 aim = InlineKeyboardMarkup()
 aim.row(InlineKeyboardButton("Аим", callback_data="мем 6 аим"),
-          InlineKeyboardButton("Игра", callback_data="мем 6 игра"))
+          InlineKeyboardButton("Калаш", callback_data="мем 6 игра"))
 aim.row(InlineKeyboardButton("Прицел", callback_data="мем 6 прицел"),
-          InlineKeyboardButton("Тима", callback_data="мем 6 тима"))
+          InlineKeyboardButton("Тиммейт", callback_data="мем 6 тима"))
 
 chad = InlineKeyboardMarkup()
 chad.row(InlineKeyboardButton("Гигачад", callback_data="мем 7 чад"))
@@ -55,6 +55,11 @@ chad.row(InlineKeyboardButton("Гурам Мецхарвешвили", callback_
 chad.row(InlineKeyboardButton("Крис Судмалис", callback_data="мем 7 крис"))
 chad.row(InlineKeyboardButton("Эрнест Халимов", callback_data="мем 7 эрнест"))
 
+mime = InlineKeyboardMarkup()
+mime.row(InlineKeyboardButton("2026", callback_data="мем 8 2026"),
+          InlineKeyboardButton("2027", callback_data="мем 8 2027"))
+mime.row(InlineKeyboardButton("2031", callback_data="мем 8 2031"),
+          InlineKeyboardButton("2034", callback_data="мем 8 2034"))
 
 @bot.message_handler(commands=["start"])
 def start(message: Message):
@@ -118,7 +123,15 @@ def handler(call: CallbackQuery):
             points += 1
             print(points)
         bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.id, caption=call.message.caption)
-        bot.send_photo(chat_id=call.message.chat.id, caption="Вопрос №6:\nКак зовут гигачада в реальной жизни?",
+        bot.send_photo(chat_id=call.message.chat.id, caption="Вопрос №7:\nКак зовут гигачада в реальной жизни?",
                        reply_markup=chad, photo=giga)
+    if que == "7":
+        ans = call.data.split()[2]
+        if ans == "эрнест":
+            points += 1
+            print(points)
+        bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.id, caption=call.message.caption)
+        bot.send_photo(chat_id=call.message.chat.id, caption="Вопрос №8:\nИз какого года этот мем?",
+                       reply_markup=mime, photo=meme)
 
 bot.infinity_polling()
