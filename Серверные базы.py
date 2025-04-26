@@ -32,16 +32,28 @@ fake = faker.Faker("ru_RU")
     session.add(user)
 session.commit()'''
 
-for i in range(200):
+'''for i in range(200):
     hero = Heroes(name=fake.middle_name(), damage=random.randint(10, 50), health=random.randint(50, 250),level=1)
-    session.add(hero)
-session.commit()
+    session.merge(hero)
+session.commit()'''
 
 alls = session.query(Heroes).all()
 for user in alls:
-    print(alls)
+    print(user.__dict__)
 
-'''olds = session.query(Users).filter(Users.age>=90).all()
-print(olds)
-for i in olds:
+session.query(Heroes).filter(Heroes.health>=100, Heroes.damage>=20).update({"level": 2})
+session.query(Heroes).filter(Heroes.health>=150, Heroes.damage>=30).update({"level": 3})
+session.commit()
+
+for i in range(1,4):
+    olds = session.query(Heroes).filter(i==Heroes.level).all()
+    print(len(olds), i)
+
+session.query(Heroes).filter("Витальевич"==Heroes.name).delete()
+session.commit()
+
+one = session.get(Heroes, "Валерьянович")
+print(one)
+
+'''for i in olds:
     print(i.age, i.username)'''
