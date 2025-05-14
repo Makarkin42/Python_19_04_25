@@ -52,6 +52,7 @@ def start(message: Message):
 @bot.callback_query_handler(func=lambda call:call.data.startswith("starts"))
 def callback1(call: CallbackQuery):
     global points
+    points = 0
     bot.edit_message_text(chat_id=call.message.chat.id, text=call.message.text, message_id=call.message.id)
     bot.send_message(chat_id=call.message.chat.id, reply_markup=one, text=f"Вопрос №1📆:\nВ каком году родилась Людмила?")
 
@@ -79,7 +80,7 @@ def callback1(call: CallbackQuery):
             points += 1
         bot.edit_message_text(chat_id=call.message.chat.id, text=call.message.text, message_id=call.message.id)
         bot.send_message(chat_id=call.message.chat.id, reply_markup=four,
-                         text=f"Вопрос №4:\nКакая у Людмилы девичья фамилия?")
+                         text=f"Вопрос №4👩:\nКакая у Людмилы девичья фамилия?")
     if que == "4":
         ans = call.data.split()[2]
         if ans == "коптева":

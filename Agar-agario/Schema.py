@@ -9,14 +9,14 @@ Base = declarative_base()
 class Stats(Base):
     __tablename__ = "agario"
     id = Column(Integer, primary_key=True)
-    username = Column(String(36), nullable=False)
-    x = Column(Integer)
-    y = Column(Integer)
+    username = Column(String(36))
+    x = Column(Integer, default=250)
+    y = Column(Integer, default=250)
     xspeed = Column(Integer, default=0)
     yspeed = Column(Integer, default=0)
     abspeed = Column(Integer, default=1)
     color = Column(String, default="white")
     size = Column(Integer, default=35)
-    adress = Column(String(40))
+    adress = Column(String)
 
 Base.metadata.create_all(engine)
