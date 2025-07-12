@@ -1,0 +1,7 @@
+<RCC>
+  <qresource>
+    <file>images/Image_pizza.png</file>
+    <file>images/Image1png.png</file>
+    <file>images/Image2png.png</file>
+  </qresource>
+</RCC>

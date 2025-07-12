@@ -145,7 +145,7 @@ menu.add.range_slider("ГРОМКОСТЬ МУЗЫКИ",3,list(range(8)),onchang
 menu.add.button("ВЫХОД",quit)
 
 bg_m = pygame.mixer.Sound("./music/background.mp3")
-bg_m.set_volume(0.3)
+bg_m.set_volume(0.2)
 bg_m.play(loops=-1)
 
 eat_m = pygame.mixer.Sound("./music/eat.mp3")
