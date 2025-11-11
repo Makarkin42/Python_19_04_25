@@ -21,9 +21,9 @@ class Gamer:
         self.y = 2500
         self.xspeed = 0
         self.yspeed = 0
-        self.abspeed = 8
+        self.abspeed = 50
         self.color = color
-        self.size = 30
+        self.size = 100
         self.db = session.get(Stats, self.id)
         self.xvid = 500
         self.yvid = 500
@@ -124,6 +124,7 @@ while run:
             host = f"({adres[0]},{adres[1]})"
             data = session.query(Stats).filter(host==Stats.adress).all()[0]
             user = Gamer(name=nickname,sk=clients,adress=host,id=data.id, color=col)
+            user.abspeed = 20
             users[user.id] = user
         except BlockingIOError:
             pass
@@ -134,7 +135,7 @@ while run:
             bot = Gamer(name="boba", adress=None, sk=None, id=tick + i, color="")
             bot.x = random.randint(0, WHEIGHT)
             bot.y = random.randint(0, WWIDTH)
-            bot.size = random.randint(15, 40)
+            bot.size = random.randint(200, 500)
             bot.color = random.choice(["white", "green", "yellow", "blue", "red", "purple", "orange"])
             bot.xspeed = random.random() * 2 - 1
             bot.yspeed = random.random() * 2 - 1
