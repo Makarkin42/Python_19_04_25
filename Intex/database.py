@@ -82,8 +82,75 @@ class Stockings(Base):
 
         if shinn and feett and anklee:
             return anklee[0].size, shinn[0].size, feett[0].size
-        return None
+        return False, False, False
 
+
+class Tights(Base):
+    __tablename__ = "tights"
+    size = Column(String, primary_key=True)  # Размер (S, M, L, XL)
+    min_ankle = Column(Integer)
+    max_ankle = Column(Integer)
+    min_shin = Column(Integer)
+    max_shin = Column(Integer)
+    min_okrb = Column(Integer)    #Окружность бедер
+    max_okrb = Column(Integer)
+    min_obhvb = Column(Integer)       #Обхват бедер
+    max_obhvb = Column(Integer)
+    min_obhvt = Column(Integer)       #Обхват талии
+    max_obhvt = Column(Integer)
+    min_feet = Column(Integer)
+    max_feet = Column(Integer)
+
+    @classmethod
+    def add_product(cls):
+        """Удобный метод для добавления товара с проверками правильности"""
+        print("Для добавления нового продукта введите его данные ниже")
+        data = {}
+
+        size = input("\nВведите размер: ").strip().upper()
+        while size not in SIZES:
+            size = input("Введите размер: ").strip().upper()
+        data['size'] = size
+
+        for key, body_part in (('shin', "голени"),
+                               ('feet', "стопы"),
+                               ('ankle', "лодыжки"),
+                               ('okrb', "окружность бедер"),
+                               ('obhvb', "обхвата бедер"),
+                               ('obhvt', "обхвата талии")):
+            minimum = input(f"\nВведите размер {body_part}\nМинимальный: ").strip()
+            maximum = input("Максимальный: ").strip()
+            while not (minimum.isdigit() and maximum.isdigit()) or int(minimum) > int(maximum):
+                print("Неверные размеры, проверьте данные!")
+                minimum = input(f"Введите размер {body_part}\nМинимальный: ").strip()
+                maximum = input("Максимальный: ").strip()
+            data[f"min_{key}"] = minimum
+            data[f"max_{key}"] = maximum
+
+        product = Tights(**data)  # Все ключи словаря становятся атрибутами экземпляра
+        session.merge(product)
+        session.commit()
+
+
+    @classmethod
+    def get_size(cls,
+                 ankle_size: int,
+                 shin_size: int,
+                 okr_b_size: int,
+                 obhv_b_size: int,
+                 obhvt_size: int,
+                 feet_size: int):
+        """Метод для получения размера продукта по параметрам"""
+        anklee = session.query(cls).filter(cls.min_ankle <= ankle_size, cls.max_ankle > ankle_size).all()
+        shinn = session.query(cls).filter(cls.min_shin <= shin_size, cls.max_shin > shin_size).all()
+        okr_b = session.query(cls).filter(cls.min_okrb <= okr_b_size, cls.max_okrb > okr_b_size).all()
+        obhv_b = session.query(cls).filter(cls.min_obhvb <= obhv_b_size, cls.max_obhvb > obhv_b_size).all()
+        obhv_t = session.query(cls).filter(cls.min_obhvt <= obhvt_size, cls.max_obhvt > obhvt_size).all()
+        feett = session.query(cls).filter(cls.min_feet <= feet_size, cls.max_feet > feet_size).all()
+
+        if anklee and shinn and okr_b and obhv_b and obhv_t and feett:
+            return anklee[0].size, shinn[0].size, okr_b[0].size, obhv_b[0].size, obhv_t[0].size, feett[0].size
+        return False, False, False, False, False, False
 
 Base.metadata.create_all(engine)
 
@@ -96,7 +163,7 @@ Base.metadata.create_all(engine)
 # Здесь можно протестировтаь работу методов и функций
 if __name__ == "__main__":
     # Добавить новый продукт
-    #Stockings.add_product()
+    Tights.add_product()
 
     # Вернет S, если он есть в таблице
     print(Stockings.get_size("male", shin_size=32, feet_size=36, ankle_size=20))
