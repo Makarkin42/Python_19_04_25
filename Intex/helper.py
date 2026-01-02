@@ -11,10 +11,10 @@ back_photo.row(IB(text="Назад к меню⬅", callback_data="back foto"))
 
 #Клавиатура для меню
 main = InlineKeyboardMarkup()
-main.row(IB(text="Помощь с выбором размера👨‍💻", callback_data="main help"))
-main.row(IB(text="Посмотреть ссылки⚙", callback_data="main links"))
-main.row(IB(text="Посмотреть размерные таблицы📃", callback_data="main tabs"))
 main.row(IB(text="Инструкция по пользованию🔖", callback_data="main noobs"))
+main.row(IB(text="Помощь с выбором размера👨‍💻", callback_data="main help"))
+main.row(IB(text="Посмотреть размерные таблицы📃", callback_data="main tabs"))
+main.row(IB(text="Посмотреть ссылки⚙", callback_data="main links"))
 
 #Клавиатуры с продукцией
 prod = InlineKeyboardMarkup()
@@ -62,7 +62,7 @@ def handler(call: CallbackQuery):
     bot.send_message(chat_id=call.message.chat.id, reply_markup=back, text=f"👩‍🏫Основная инструкция по пользованию ботом:\n\n1️⃣ Как управлять ботом?"
     f"\nДля перемещения по разделам нажимайте на кнопки под сообщениями, а для вызова меню - нажмите на /start, эта команда также выделена синим цветом.\n"
     f"\n2️⃣ Как использовать помощника по выбору размеров?\nСперва выберите нужный вам товар, а затем после сообщения бота напишите в чат нужный атрибут"
-    f" в сантиметрах. Чтобы ваше сообщение распозналось, нужно вводить целое число без пробелов и других символов. Во время процесса ввода атрибутов в чат команды не работают."
+    f" в сантиметрах. Чтобы ваше сообщение распозналось, нужно вводить целое число без пробелов и других символов. Если ваши данные окажутся дробными - округлите их. Во время процесса ввода атрибутов в чат команды не работают."
     f"\n\n3️⃣ Что если бот мне не отвечает?\nЕсть три варианта решения проблемы:\n 1. Ввести команду /start\n 2. Очистить чат и перезапустить бота"
     f"\n 3. Подождать. Проблемы иногда бывают со стороны мессенджера или провайдера, тут вам поможет ожидание.\n\nНадеюсь что данная инструкция ответила на все ваши вопросы😊")
 
@@ -114,7 +114,7 @@ def handler(call: CallbackQuery):
 
 #   \\\\\\\\Гольфы/////////
 @bot.callback_query_handler(func=lambda call:call.data.startswith("prod2 golf"))
-def handler(call: CallbackQuery):
+def handlerer(call: CallbackQuery):
     #пошаговый сбор информации
     action = call.data.split()[1]
     if action == "golfm":
@@ -124,30 +124,30 @@ def handler(call: CallbackQuery):
     global prodata
     prodata = gend
     bot.edit_message_text(message_id=call.message.id, chat_id=call.message.chat.id, text="👩‍🏫Укажите длину окружности вашей лодыжки")
-    bot.register_next_step_handler(call.message, handler2, gend)
-def handler2(message: Message, gend):
+    bot.register_next_step_handler(call.message, handlerer2, gend)
+def handlerer2(message: Message, gend):
     ankle = message.text
     if ankle.isdigit():
         bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите длину окружности вашей голени")
-        bot.register_next_step_handler(message, handler3, ankle, gend)
+        bot.register_next_step_handler(message, handlerer3, ankle, gend)
     else:
         bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
-        bot.register_next_step_handler(message, handler2, gend)
-def handler3(message: Message, ankle, gend):
+        bot.register_next_step_handler(message, handlerer2, gend)
+def handlerer3(message: Message, ankle, gend):
     shin = message.text
     if shin.isdigit():
-        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите длину окружности вашей стопы")
-        bot.register_next_step_handler(message, handler4, ankle, shin, gend)
+        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите размер вашей стопы")
+        bot.register_next_step_handler(message, handlerer4, ankle, shin, gend)
     else:
         bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
-        bot.register_next_step_handler(message, handler3, ankle, gend)
+        bot.register_next_step_handler(message, handlerer3, ankle, gend)
 
-def handler4(message: Message, ankle, shin, gend):
+def handlerer4(message: Message, ankle, shin, gend):
     feet = message.text
     if feet.isdigit():
         #проблемное место
         #int(shin), int(feet), int(ankle)
-        resi = Stockings.get_size(gend, int(ankle), int(shin), int(feet))
+        resi = Stockings.get_size(gend, ankle_size=int(ankle), shin_size=int(shin), feet_size=int(feet))
         print(resi)
         if resi[0] == resi[1] == resi[2] and resi[0]:
             if prodata == "male":
@@ -160,16 +160,97 @@ def handler4(message: Message, ankle, shin, gend):
         elif resi[0] and resi[1] and resi[2]:
             bot.send_message(chat_id=message.chat.id, text=f"☝️Видимо не все атрибуты попали под один размер, результаты ниже:\n"
             f"1. Размер лодыжки: {resi[0]}\n2. Размер голени: {resi[1]}\n3. Размер стопы: {resi[2]}\nРекомендуем вам взять наименьший размер из предложенных,"
-            f" либо если вы сомневаетесь, обратится к специалисту, которого всегда можно найти в разделе с ссылками.", reply_markup=back)
+            f" либо безразмерную версию изделия.", reply_markup=back)
         elif not resi[0] or not resi[1] or not resi[2]:
             bot.send_message(chat_id=message.chat.id, reply_markup=back, text="☝️Некоторые из результатов не совпали с размерами, что делать?"
             "\n1. Перепроверить введенные данные, вдруг вы опечатались.\n2. Если данные введены корректно, то можно заказать изделие на заказ, за этим можно"
-            " обратиться к менеджерам или на сайт🌐\n\n❓Почему так происходит? Числа что вы ввели, либо меньше чем S, либо больше чем XL")
-
-
+            " обратиться к менеджеру: @alena_intex; либо можно заказать безразмерную версию изделия на сайте: https://bint.ru/shop/chulki/"
+            "\n\n❓Почему так происходит? Числа что вы ввели, либо меньше чем S, либо больше чем XL")
     else:
         bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
         bot.register_next_step_handler(message, handler4, ankle, shin, gend)
+
+
+
+#   \\\\\\\\Колготки/////////
+@bot.callback_query_handler(func=lambda call:call.data.startswith("prod2 kolgotki"))
+def handler(call: CallbackQuery):
+    #пошаговый сбор информации
+    bot.edit_message_text(message_id=call.message.id, chat_id=call.message.chat.id, text="👩‍🏫Укажите длину окружности вашей лодыжки")
+    bot.register_next_step_handler(call.message, handler2)
+def handler2(message: Message):
+    ankle = message.text
+    if ankle.isdigit():
+        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите длину окружности вашей голени")
+        bot.register_next_step_handler(message, handler3, ankle)
+    else:
+        bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
+        bot.register_next_step_handler(message, handler2)
+def handler3(message: Message, ankle):
+    shin = message.text
+    if shin.isdigit():
+        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите размер вашей стопы")
+        bot.register_next_step_handler(message, handler4, ankle, shin)
+    else:
+        bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
+        bot.register_next_step_handler(message, handler3, ankle)
+
+def handler4(message: Message, ankle, shin):
+    feet = message.text
+    if feet.isdigit():
+        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите длину окружности верхней части бедра")
+        bot.register_next_step_handler(message, handler5, ankle, shin, feet)
+    else:
+        bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
+        bot.register_next_step_handler(message, handler4, ankle, shin)
+
+def handler5(message: Message, ankle, shin, feet):
+    okr_b = message.text
+    if okr_b.isdigit():
+        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите длину обхвата бедер")
+        bot.register_next_step_handler(message, handler6, ankle, shin, feet, okr_b)
+    else:
+        bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
+        bot.register_next_step_handler(message, handler5, ankle, shin, feet)
+
+def handler6(message: Message, ankle, shin, feet, okr_b):
+    obhvat_b = message.text
+    if obhvat_b.isdigit():
+        bot.send_message(chat_id=message.chat.id, text="👩‍🏫Укажите длину обхвата талии")
+        bot.register_next_step_handler(message, handler7, ankle, shin, feet, okr_b, obhvat_b)
+    else:
+        bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
+        bot.register_next_step_handler(message, handler6, ankle, shin, feet, okr_b)
+
+def handler7(message: Message, ankle, shin, feet, okr_b, obhvat_b):
+    obhvat_t = message.text
+    if obhvat_t.isdigit():
+        gend = "male"
+        print(ankle, shin, feet, okr_b, obhvat_b, obhvat_t)
+        resi = Tights.getting_size("male",  ankle_size=int(ankle), shin_size=int(shin), feet_size=int(feet), okr_b_size=int(okr_b), obhv_b_size=int(obhvat_b), obhvt_size=int(obhvat_t))
+        print(resi)
+        print(resi[0], resi[1], resi[2], resi[3], resi[4], resi[5])
+        if resi[0] == resi[1] == resi[2] == resi[3] == resi[4] == resi[5] and resi[0]:
+            bot.send_message(chat_id=message.chat.id,
+                             text=f"📚Результаты подсчитаны!\nНаиболее подходящий для Вас размер"
+                                  f" под колготки - {resi[0]}.\n🧦Заказать их можно по ссылке:\nhttps://bint.ru/shop/kolgotki/\nНажмите /start или введите эту команду для вызова меню")
+        elif resi[0] and resi[1] and resi[2] and resi[3] and resi[4] and resi[5]:
+            bot.send_message(chat_id=message.chat.id,
+                             text=f"☝️Видимо не все атрибуты попали под один размер, результаты ниже:\n"
+                                  f"1. Размер лодыжки: {resi[0]}\n2. Размер голени: {resi[1]}\n3. Размер стопы: {resi[2]}\n"
+            f" 4. Размер окружности бедра: {resi[3]}\n 5. Размер обхвата бедер: {resi[4]}\n"
+            f" 6. Размер окружности талии: {resi[5]}\nРекомендуем вам взять наименьший размер из предложенных,"
+                                  f" либо безразмерную версию изделия",
+                             reply_markup=back)
+        elif not resi[0] or not resi[1] or not resi[2] or not resi[3] or not resi[4] or not resi[5]:
+            bot.send_message(chat_id=message.chat.id, reply_markup=back,
+                             text="☝️Некоторые из результатов не совпали с размерами, что делать?"
+            "\n1. Перепроверить введенные данные, вдруг вы опечатались.\n2. Если данные введены корректно, то можно заказать изделие на заказ, за этим можно"
+            " обратиться к менеджеру: @alena_intex; либо заказать безразмерную версию изделия на сайте: https://bint.ru/shop/chulki/"
+            "\n\n❓Почему так происходит? Числа что вы ввели, либо меньше чем S, либо больше чем XL")
+    else:
+        bot.send_message(chat_id=message.chat.id, text="Укажите в сообщении целое число без пробелов!")
+        bot.register_next_step_handler(message, handler7, ankle, shin, feet, okr_b, obhvat_b)
 
 
 bot.infinity_polling()
