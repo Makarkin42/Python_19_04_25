@@ -59,4 +59,4 @@ auto_text.pack()
 
 
 
-window.mainloop()
+#window.mainloop()

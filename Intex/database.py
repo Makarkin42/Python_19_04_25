@@ -163,25 +163,80 @@ class Chulki_pregnant(Base):
         wide = session.query(cls).filter(cls.gender == gender, cls.min_wide <= wide_size,
                                            cls.max_wide > wide_size).all()
         rost = session.query(cls).filter(cls.gender == gender, cls.min_lenght <= rost_size,
-                                           cls.max_lenght > rost_size).all()
+                                         cls.max_lenght > rost_size).all()
+
 
         if wide:
-            if int(wide[0].num) >= int(okr_b[0].num):
+            if not okr_b or int(wide[0].num) >= int(okr_b[0].num) or int(wide[0].num) == int(shinn[0].num):
                 if anklee and shinn and feett and wide and rost:
                     print("ZHIR")
-                    return anklee[0].size, shinn[0].size, feett[0].size, wide[0].size, rost[0].size, True
-                return False, False, False, False, False, False, False
+                    return anklee[0].size, shinn[0].size, feett[0].size, wide[0].size, "подходит", True
+                return False, False, False, False, False, False
             else:
                 if anklee and shinn and feett and okr_b and rost:
                     print("DRISHZH")
-                    return anklee[0].size, shinn[0].size, feett[0].size, okr_b[0].size, rost[0].size, False
-                return False, False, False, False, False, False, False
+                    return anklee[0].size, shinn[0].size, feett[0].size, okr_b[0].size, "подходит", False
+                return False, False, False, False, False, False
         else:
             if anklee and shinn and feett and okr_b and rost:
                 print("IMBA!!!!!")
-                return anklee[0].size, shinn[0].size, feett[0].size, okr_b[0].size, rost[0].size, False
-            return False, False, False, False, False, False, False
+                return anklee[0].size, shinn[0].size, feett[0].size, okr_b[0].size, "подходит", False
+            return False, False, False, False, False, False
 
+
+
+class Chulki_def(Base):
+    __tablename__ = "chulki_default"
+    gender = Column(String, primary_key=True)
+    size = Column(String, primary_key=True)  # Размер (S, M, L, XL)
+    num = Column(Integer)
+    min_ankle = Column(Integer)
+    max_ankle = Column(Integer)
+    min_shin = Column(Integer)
+    max_shin = Column(Integer)
+    min_okrb = Column(Integer)
+    max_okrb = Column(Integer)
+    min_wide = Column(Integer)
+    max_wide = Column(Integer)
+    min_feet = Column(Integer)
+    max_feet = Column(Integer)
+
+    @classmethod
+    def getting_size(cls,
+                     gender: str,
+                     ankle_size: int,
+                     shin_size: int,
+                     okr_b_size: int,
+                     wide_size: int,
+                     feet_size: int):
+        anklee = session.query(cls).filter(cls.gender == gender, cls.min_ankle <= ankle_size,
+                                           cls.max_ankle > ankle_size).all()
+        shinn = session.query(cls).filter(cls.gender == gender, cls.min_shin <= shin_size,
+                                          cls.max_shin > shin_size).all()
+        feett = session.query(cls).filter(cls.gender == gender, cls.min_feet <= feet_size,
+                                          cls.max_feet > feet_size).all()
+        okr_b = session.query(cls).filter(cls.gender == gender, cls.min_okrb <= okr_b_size,
+                                          cls.max_okrb > okr_b_size).all()
+        wide = session.query(cls).filter(cls.gender == gender, cls.min_wide <= wide_size,
+                                           cls.max_wide > wide_size).all()
+
+
+        if wide:
+            if not okr_b or int(wide[0].num) >= int(okr_b[0].num) or int(wide[0].num) == int(shinn[0].num):
+                if anklee and shinn and feett and wide:
+                    print("ZHIR")
+                    return anklee[0].size, shinn[0].size, feett[0].size, wide[0].size, True
+                return False, False, False, False, False
+            else:
+                if anklee and shinn and feett and okr_b:
+                    print("DRISHZH")
+                    return anklee[0].size, shinn[0].size, feett[0].size, okr_b[0].size, False
+                return False, False, False, False, False
+        else:
+            if anklee and shinn and feett and okr_b:
+                print("IMBA!!!!!")
+                return anklee[0].size, shinn[0].size, feett[0].size, okr_b[0].size, False
+            return False, False, False, False, False
 
 Base.metadata.create_all(engine)
 
@@ -190,4 +245,4 @@ Base.metadata.create_all(engine)
 if __name__ == "__main__":
     pass
     #Stockings.add_product()
-    print(Chulki_pregnant.getting_size("male",  ankle_size=30, shin_size=42, feet_size=40, okr_b_size=50, wide_size=75, rost_size=70))
+    print(Chulki_pregnant.getting_size("male",  ankle_size=32, shin_size=40, feet_size=40, okr_b_size=70, wide_size=70, rost_size=80))
